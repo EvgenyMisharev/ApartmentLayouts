@@ -30,9 +30,88 @@ namespace ApartmentLayouts
                 .ToList();
             List<string> sectionNumberList = GetSectionNumberList(roomList);
 
+            //Проверка наличия общих параметров
+            if(roomList.Count != 0)
+            {
+                //О_НомерСекции - номер секции к которой относится помещение
+                Guid sectionNumberParamGuid = new Guid("b59a3474-a5f4-430a-b087-a20f1a4eb57e");
+                if(roomList.First().get_Parameter(sectionNumberParamGuid) == null)
+                {
+                    TaskDialog.Show("Revit", "У помещений отсутствует параметр \"О_НомерСекции\"!");
+                    return Result.Cancelled;
+                }
+
+                //АР_НомерКвартиры - номер квартиры к которой относится помещение
+                Guid apartmentNumberParamGuid = new Guid("10fb72de-237e-4b9c-915b-8849b8907695");
+                if (roomList.First().get_Parameter(apartmentNumberParamGuid) == null)
+                {
+                    TaskDialog.Show("Revit", "У помещений отсутствует параметр \"АР_НомерКвартиры\"!");
+                    return Result.Cancelled;
+                }
+
+                //АР_ТипПомещения - жилое, нежилое и т.д.
+                Guid roomTypeParamGuid = new Guid("7743e986-fcd9-4029-b960-71e522adccab");
+                if (roomList.First().get_Parameter(roomTypeParamGuid) == null)
+                {
+                    TaskDialog.Show("Revit", "У помещений отсутствует параметр \"АР_ТипПомещения\"!");
+                    return Result.Cancelled;
+                }
+
+                //АР_КоэффПлощади - коэффициент расчета квартирографии
+                Guid areaCoefficientParamGuid = new Guid("066eab6d-c348-4093-b0ca-1dfe7e78cb6e");
+                if (roomList.First().get_Parameter(areaCoefficientParamGuid) == null)
+                {
+                    TaskDialog.Show("Revit", "У помещений отсутствует параметр \"АР_КоэффПлощади\"!");
+                    return Result.Cancelled;
+                }
+
+                //АР_ПлощКвЖилая - сумма площадей жилых комнаят
+                Guid apartmentAreaResidentialParamGuid = new Guid("178e222b-903b-48f5-8bfc-b624cd67d13c");
+                if (roomList.First().get_Parameter(apartmentAreaResidentialParamGuid) == null)
+                {
+                    TaskDialog.Show("Revit", "У помещений отсутствует параметр \"АР_ПлощКвЖилая\"!");
+                    return Result.Cancelled;
+                }
+
+                //АР_ПлощКвартиры - площадь квартиры без 3 и 4
+                Guid apartmentAreaParamGuid = new Guid("d3035d0f-b738-4407-a0e5-30787b92fa49");
+                if (roomList.First().get_Parameter(apartmentAreaParamGuid) == null)
+                {
+                    TaskDialog.Show("Revit", "У помещений отсутствует параметр \"АР_ПлощКвартиры\"!");
+                    return Result.Cancelled;
+                }
+
+                //АР_ПлощКвОбщая - общая площадь квартиры с учетом коэффициентов
+                Guid apartmentAreaTotalParamGuid = new Guid("af973552-3d15-48e3-aad8-121fe0dda34e");
+                if (roomList.First().get_Parameter(apartmentAreaTotalParamGuid) == null)
+                {
+                    TaskDialog.Show("Revit", "У помещений отсутствует параметр \"АР_ПлощКвОбщая\"!");
+                    return Result.Cancelled;
+                }
+
+                //АР_ПлощКвОбщаяБезКоэф - общая площадь квартиры без учета коэффициентов
+                Guid apartmentAreaTotalWithoutCoefficientParamGuid = new Guid("f71f6c0b-ed48-4bd9-bf77-bd8c2f8593a7");
+                if (roomList.First().get_Parameter(apartmentAreaTotalWithoutCoefficientParamGuid) == null)
+                {
+                    TaskDialog.Show("Revit", "У помещений отсутствует параметр \"АР_ПлощКвОбщаяБезКоэф\"!");
+                    return Result.Cancelled;
+                }
+
+                //АР_КолвоКомнат - параметр для вывода кол-ва комнат.
+                Guid roomsCountParamGuid = new Guid("a41aaf5b-e9e5-42f0-8a27-6f4bf7e9c9b2");
+                if (roomList.First().get_Parameter(roomsCountParamGuid) == null)
+                {
+                    TaskDialog.Show("Revit", "У помещений отсутствует параметр \"АР_КолвоКомнат\"!");
+                    return Result.Cancelled;
+                }
+            }
+
             using (Transaction t = new Transaction(doc))
             {
                 t.Start("Квартирография");
+                //О_НомерСекции - номер секции к которой относится помещение
+                Guid sectionNumberParamGuid = new Guid("b59a3474-a5f4-430a-b087-a20f1a4eb57e");
+
                 foreach (Level lv in levelsList)
                 {
                     if (sectionNumberList.Count > 1)
@@ -43,7 +122,7 @@ namespace ApartmentLayouts
                                 .WhereElementIsNotElementType()
                                 .Where(r => r.GetType() == typeof(Room))
                                 .Where(r => r.LevelId == lv.Id)
-                                .Where(r => r.get_Parameter(new Guid("b59a3474-a5f4-430a-b087-a20f1a4eb57e")).AsString() == sn)
+                                .Where(r => r.get_Parameter(sectionNumberParamGuid).AsString() == sn)
                                 .Cast<Room>()
                                 .ToList();
                             List<string> apartmentNumberList = GetApartmentNumberList(roomListAtLevelAndSection);
@@ -152,16 +231,23 @@ namespace ApartmentLayouts
                         apartmentRoomList.Add(room);
                     }
                 }
+
                 //АР_ПлощКвЖилая - сумма площадей жилых комнаят
                 Guid apartmentAreaResidentialParamGuid = new Guid("178e222b-903b-48f5-8bfc-b624cd67d13c");
                 //АР_ПлощКвартиры - площадь квартиры без 3 и 4
                 Guid apartmentAreaParamGuid = new Guid("d3035d0f-b738-4407-a0e5-30787b92fa49");
                 //АР_ПлощКвОбщая - общая площадь квартиры с учетом коэффициентов
                 Guid apartmentAreaTotalParamGuid = new Guid("af973552-3d15-48e3-aad8-121fe0dda34e");
+                //АР_ПлощКвОбщаяБезКоэф - общая площадь квартиры без учета коэффициентов
+                Guid apartmentAreaTotalWithoutCoefficientParamGuid = new Guid("f71f6c0b-ed48-4bd9-bf77-bd8c2f8593a7");
+                //АР_КолвоКомнат - параметр для вывода кол-ва комнат.
+                Guid roomsCountParamGuid = new Guid("a41aaf5b-e9e5-42f0-8a27-6f4bf7e9c9b2");
 
                 double apartmentAreaResidential = 0;
                 double apartmentArea = 0;
                 double apartmentAreaTotal = 0;
+                double apartmentAreaTotalWithoutCoefficient = 0;
+                double roomsCount = 0;
 
                 foreach (Room room in apartmentRoomList)
                 {
@@ -170,6 +256,7 @@ namespace ApartmentLayouts
                     if (roomTypeParamAsDouble == 1)
                     {
                         apartmentAreaResidential += (Math.Round(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble() / 10.764, 2) * 10.764);
+                        roomsCount += 1;
                     }
                     if (roomTypeParamAsDouble == 1 || roomTypeParamAsDouble == 2)
                     {
@@ -189,6 +276,7 @@ namespace ApartmentLayouts
                         {
                             apartmentAreaTotal += (Math.Round((room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble() / 10.764) * 0.3, 2) * 10.764);
                         }
+                        apartmentAreaTotalWithoutCoefficient += (Math.Round(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble() / 10.764, 2) * 10.764);
                     }
                 }
                 foreach (Room room in apartmentRoomList)
@@ -196,6 +284,8 @@ namespace ApartmentLayouts
                     room.get_Parameter(apartmentAreaResidentialParamGuid).Set(apartmentAreaResidential);
                     room.get_Parameter(apartmentAreaParamGuid).Set(apartmentArea);
                     room.get_Parameter(apartmentAreaTotalParamGuid).Set(apartmentAreaTotal);
+                    room.get_Parameter(apartmentAreaTotalWithoutCoefficientParamGuid).Set(apartmentAreaTotalWithoutCoefficient);
+                    room.get_Parameter(roomsCountParamGuid).Set(roomsCount);
                 }
             }
         }
