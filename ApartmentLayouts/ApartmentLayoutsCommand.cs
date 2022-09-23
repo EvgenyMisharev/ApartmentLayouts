@@ -106,53 +106,105 @@ namespace ApartmentLayouts
                 }
             }
 
+            ApartmentLayoutsWPF apartmentLayoutsWPF = new ApartmentLayoutsWPF();
+            apartmentLayoutsWPF.ShowDialog();
+            if (apartmentLayoutsWPF.DialogResult != true)
+            {
+                return Result.Cancelled;
+            }
+            string apartmentLayoutsSettingsSelectionValue = apartmentLayoutsWPF.ApartmentLayoutsSettingsSelectionValue;
+
             using (Transaction t = new Transaction(doc))
             {
                 t.Start("Квартирография");
                 //О_НомерСекции - номер секции к которой относится помещение
                 Guid sectionNumberParamGuid = new Guid("b59a3474-a5f4-430a-b087-a20f1a4eb57e");
 
-                foreach (Level lv in levelsList)
+                if (apartmentLayoutsSettingsSelectionValue == "rbt_SeparatedByLevels")
                 {
-                    if (sectionNumberList.Count > 1)
+                    foreach (Level lv in levelsList)
                     {
-                        foreach (String sn in sectionNumberList)
+                        if (sectionNumberList.Count > 1)
                         {
-                            List<Room> roomListAtLevelAndSection = new FilteredElementCollector(doc).OfClass(typeof(SpatialElement))
-                                .WhereElementIsNotElementType()
-                                .Where(r => r.GetType() == typeof(Room))
-                                .Where(r => r.LevelId == lv.Id)
-                                .Where(r => r.get_Parameter(sectionNumberParamGuid).AsString() == sn)
-                                .Cast<Room>()
-                                .ToList();
-                            List<string> apartmentNumberList = GetApartmentNumberList(roomListAtLevelAndSection);
+                            foreach (string sn in sectionNumberList)
+                            {
+                                List<Room> roomListAtLevelAndSection = new FilteredElementCollector(doc).OfClass(typeof(SpatialElement))
+                                    .WhereElementIsNotElementType()
+                                    .Where(r => r.GetType() == typeof(Room))
+                                    .Where(r => r.LevelId == lv.Id)
+                                    .Where(r => r.get_Parameter(sectionNumberParamGuid).AsString() == sn)
+                                    .Cast<Room>()
+                                    .ToList();
+                                List<string> apartmentNumberList = GetApartmentNumberList(roomListAtLevelAndSection);
 
-                            SetRoomTypeParam(roomListAtLevelAndSection);
+                                SetRoomTypeParam(roomListAtLevelAndSection);
+                                if (ErrorRoomsList.Count != 0)
+                                {
+                                    TaskDialog.Show("Ошибка!!!", $"У {ErrorRoomsList.Count} помещений не заполнен параметр \"АР_ТипПомещения\"!\nЗаполните параметр и перезапустите плагин!");
+                                    return Result.Cancelled;
+                                }
+                                SetApartmentAreas(roomListAtLevelAndSection, apartmentNumberList);
+                            }
+                        }
+                        else
+                        {
+                            List<Room> roomListAtLevel = new FilteredElementCollector(doc).OfClass(typeof(SpatialElement))
+                                    .WhereElementIsNotElementType()
+                                    .Where(r => r.GetType() == typeof(Room))
+                                    .Where(r => r.LevelId == lv.Id)
+                                    .Cast<Room>()
+                                    .ToList();
+                            List<string> apartmentNumberList = GetApartmentNumberList(roomListAtLevel);
+
+                            SetRoomTypeParam(roomListAtLevel);
                             if (ErrorRoomsList.Count != 0)
                             {
                                 TaskDialog.Show("Ошибка!!!", $"У {ErrorRoomsList.Count} помещений не заполнен параметр \"АР_ТипПомещения\"!\nЗаполните параметр и перезапустите плагин!");
                                 return Result.Cancelled;
                             }
-                            SetApartmentAreas(roomListAtLevelAndSection, apartmentNumberList);
+                            SetApartmentAreas(roomListAtLevel, apartmentNumberList);
+                        }
+                    }
+                }
+                else
+                {
+                    if (sectionNumberList.Count > 1)
+                    {
+                        foreach (string sn in sectionNumberList)
+                        {
+                            List<Room> roomListAtSection = new FilteredElementCollector(doc).OfClass(typeof(SpatialElement))
+                                .WhereElementIsNotElementType()
+                                .Where(r => r.GetType() == typeof(Room))
+                                .Where(r => r.get_Parameter(sectionNumberParamGuid).AsString() == sn)
+                                .Cast<Room>()
+                                .ToList();
+                            List<string> apartmentNumberList = GetApartmentNumberList(roomListAtSection);
+
+                            SetRoomTypeParam(roomListAtSection);
+                            if (ErrorRoomsList.Count != 0)
+                            {
+                                TaskDialog.Show("Ошибка!!!", $"У {ErrorRoomsList.Count} помещений не заполнен параметр \"АР_ТипПомещения\"!\nЗаполните параметр и перезапустите плагин!");
+                                return Result.Cancelled;
+                            }
+                            SetApartmentAreas(roomListAtSection, apartmentNumberList);
                         }
                     }
                     else
                     {
-                        List<Room> roomListAtLevel = new FilteredElementCollector(doc).OfClass(typeof(SpatialElement))
+                        List<Room> roomListWithout = new FilteredElementCollector(doc).OfClass(typeof(SpatialElement))
                                 .WhereElementIsNotElementType()
                                 .Where(r => r.GetType() == typeof(Room))
-                                .Where(r => r.LevelId == lv.Id)
                                 .Cast<Room>()
                                 .ToList();
-                        List<string> apartmentNumberList = GetApartmentNumberList(roomListAtLevel);
+                        List<string> apartmentNumberList = GetApartmentNumberList(roomListWithout);
 
-                        SetRoomTypeParam(roomListAtLevel);
-                        if(ErrorRoomsList.Count != 0)
+                        SetRoomTypeParam(roomListWithout);
+                        if (ErrorRoomsList.Count != 0)
                         {
                             TaskDialog.Show("Ошибка!!!", $"У {ErrorRoomsList.Count} помещений не заполнен параметр \"АР_ТипПомещения\"!\nЗаполните параметр и перезапустите плагин!");
                             return Result.Cancelled;
                         }
-                        SetApartmentAreas(roomListAtLevel, apartmentNumberList);
+                        SetApartmentAreas(roomListWithout, apartmentNumberList);
                     }
                 }
                 t.Commit();
@@ -168,10 +220,13 @@ namespace ApartmentLayouts
             List<string> tempSectionNumberList = new List<string>();
             foreach (Room room in roomList)
             {
-                string sectionNumber = room.get_Parameter(sectionNumberParamGuid).AsString();
-                if (!tempSectionNumberList.Contains(sectionNumber) && sectionNumber != null)
+                if(room.get_Parameter(sectionNumberParamGuid) != null)
                 {
-                    tempSectionNumberList.Add(sectionNumber);
+                    string sectionNumber = room.get_Parameter(sectionNumberParamGuid).AsString();
+                    if (!tempSectionNumberList.Contains(sectionNumber) && sectionNumber != null)
+                    {
+                        tempSectionNumberList.Add(sectionNumber);
+                    }
                 }
             }
             tempSectionNumberList = tempSectionNumberList.OrderBy(n => n).ToList();
