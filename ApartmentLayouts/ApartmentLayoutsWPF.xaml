@@ -5,10 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ApartmentLayouts"
              mc:Ignorable="d"
-             Icon="pack://siteoforigin:,,,/Resources/citrus.ico"
              Title="Вариант расчета" Height="160" Width="425" 
              MinHeight="160" MinWidth="425" MaxHeight="160" MaxWidth="425"
-             WindowStyle="SingleBorderWindow" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" KeyDown="ApartmentLayoutsWPF_KeyDown" UseLayoutRounding="False">
+             WindowStyle="SingleBorderWindow" ResizeMode="NoResize" Icon="Resources/citrus.ico" WindowStartupLocation="CenterScreen" KeyDown="ApartmentLayoutsWPF_KeyDown" UseLayoutRounding="False">
     <Grid>
         <GroupBox x:Name="groupBox_ApartmentLayoutsOption" Header="Выберите опцию:" Margin="10,10,10,45">
             <Grid>
