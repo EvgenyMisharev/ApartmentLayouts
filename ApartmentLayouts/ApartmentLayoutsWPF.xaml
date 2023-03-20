@@ -4,10 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ApartmentLayouts"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
+             Icon="pack://siteoforigin:,,,/Resources/citrus.ico"
              Title="Вариант расчета" Height="160" Width="425" 
              MinHeight="160" MinWidth="425" MaxHeight="160" MaxWidth="425"
-             WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" KeyDown="ApartmentLayoutsWPF_KeyDown">
+             WindowStyle="SingleBorderWindow" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" KeyDown="ApartmentLayoutsWPF_KeyDown" UseLayoutRounding="False">
     <Grid>
         <GroupBox x:Name="groupBox_ApartmentLayoutsOption" Header="Выберите опцию:" Margin="10,10,10,45">
             <Grid>
