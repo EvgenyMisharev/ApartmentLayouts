@@ -5,11 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ApartmentLayouts"
              mc:Ignorable="d"
-             Title="Вариант расчета" Height="160" Width="425" 
-             MinHeight="160" MinWidth="425" MaxHeight="160" MaxWidth="425"
+             Title="Вариант расчета" Height="170" Width="425" 
+             MinHeight="170" MinWidth="425" MaxHeight="170" MaxWidth="425"
              WindowStyle="SingleBorderWindow" ResizeMode="NoResize" Icon="Resources/citrus.ico" WindowStartupLocation="CenterScreen" KeyDown="ApartmentLayoutsWPF_KeyDown" UseLayoutRounding="False">
     <Grid>
-        <GroupBox x:Name="groupBox_ApartmentLayoutsOption" Header="Выберите опцию:" Margin="10,10,10,45">
+        <GroupBox x:Name="groupBox_ApartmentLayoutsOption" Header="Выберите опцию:" Margin="10,10,10,0" VerticalAlignment="Top" Height="60">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="200*"/>
@@ -19,7 +19,8 @@
                 <RadioButton x:Name="rbt_NoSeparationByLevels" Content="Без разделения по уровням" Grid.Column="1" Margin="10,10,0,10" HorizontalAlignment="Center" VerticalContentAlignment="Center" Padding="5,0,0,0" VerticalAlignment="Center"/>
             </Grid>
         </GroupBox>
-
+        <CheckBox x:Name="checkBox_Coefficient" Content="Учитывать коэффициенты площади" HorizontalAlignment="Left" Margin="10,75,0,0" VerticalAlignment="Top"/>
+        
         <Button x:Name="btn_Ok" Content="Ок" HorizontalAlignment="Right" Margin="0,0,125,10" VerticalAlignment="Bottom" Width="100" Height="25" Click="btn_Ok_Click"/>
         <Button x:Name="btn_Cancel" Content="Отмена" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="100" Height="25" Click="btn_Cancel_Click"/>
     </Grid>

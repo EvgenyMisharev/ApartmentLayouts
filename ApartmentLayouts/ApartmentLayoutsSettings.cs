@@ -11,6 +11,7 @@ namespace ApartmentLayouts
     public class ApartmentLayoutsSettings
     {
         public string ApartmentLayoutsSettingsValue { get; set; }
+        public bool ConsiderAreaCoefficient { get; set; }
         public static ApartmentLayoutsSettings GetSettings()
         {
             ApartmentLayoutsSettings apartmentLayoutsSettings = null;

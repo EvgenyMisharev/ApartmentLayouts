@@ -12,7 +12,8 @@ namespace ApartmentLayouts
     [Autodesk.Revit.Attributes.Transaction(Autodesk.Revit.Attributes.TransactionMode.Manual)]
     class ApartmentLayoutsCommand : IExternalCommand
     {
-        public static List<ElementId> ErrorRoomsList;
+        static List<ElementId> ErrorRoomsList;
+        static bool considerAreaCoefficient;
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             Document doc = commandData.Application.ActiveUIDocument.Document;
@@ -113,6 +114,7 @@ namespace ApartmentLayouts
                 return Result.Cancelled;
             }
             string apartmentLayoutsSettingsSelectionValue = apartmentLayoutsWPF.ApartmentLayoutsSettingsSelectionValue;
+            considerAreaCoefficient = apartmentLayoutsWPF.ConsiderAreaCoefficient;
 
             using (Transaction t = new Transaction(doc))
             {
@@ -261,11 +263,25 @@ namespace ApartmentLayouts
                 }
                 else if (roomTypeParamAsDouble == 3)
                 {
-                    room.get_Parameter(areaCoefficientParamGuid).Set(0.5);
+                    if (considerAreaCoefficient)
+                    {
+                        room.get_Parameter(areaCoefficientParamGuid).Set(0.5);
+                    }
+                    else
+                    {
+                        room.get_Parameter(areaCoefficientParamGuid).Set(1);
+                    }
                 }
                 else if (roomTypeParamAsDouble == 4)
                 {
-                    room.get_Parameter(areaCoefficientParamGuid).Set(0.3);
+                    if (considerAreaCoefficient)
+                    {
+                        room.get_Parameter(areaCoefficientParamGuid).Set(0.3);
+                    }
+                    else
+                    {
+                        room.get_Parameter(areaCoefficientParamGuid).Set(1);
+                    }
                 }
                 else
                 {
@@ -325,11 +341,27 @@ namespace ApartmentLayouts
                         }
                         else if (roomTypeParamAsDouble == 3)
                         {
-                            apartmentAreaTotal += (Math.Round((room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble() / 10.764) * 0.5, 2) * 10.764);
+                            if (considerAreaCoefficient)
+                            {
+                                apartmentAreaTotal += (Math.Round((room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble() / 10.764) * 0.5, 2) * 10.764);
+                            }
+                            else
+                            {
+                                apartmentAreaTotal += (Math.Round((room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble() / 10.764), 2) * 10.764);
+                            }
+                                
                         }
                         else if (roomTypeParamAsDouble == 4)
                         {
-                            apartmentAreaTotal += (Math.Round((room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble() / 10.764) * 0.3, 2) * 10.764);
+                            if (considerAreaCoefficient)
+                            {
+                                apartmentAreaTotal += (Math.Round((room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble() / 10.764) * 0.3, 2) * 10.764);
+                            }
+                            else
+                            {
+                                apartmentAreaTotal += (Math.Round((room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble() / 10.764), 2) * 10.764);
+                            }
+                                
                         }
                         apartmentAreaTotalWithoutCoefficient += (Math.Round(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble() / 10.764, 2) * 10.764);
                     }

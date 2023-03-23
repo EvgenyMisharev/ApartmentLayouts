@@ -18,6 +18,7 @@ namespace ApartmentLayouts
     public partial class ApartmentLayoutsWPF : Window
     {
         public string ApartmentLayoutsSettingsSelectionValue;
+        public bool ConsiderAreaCoefficient;
         ApartmentLayoutsSettings ApartmentLayoutsSettingsParam = null;
         public ApartmentLayoutsWPF()
         {
@@ -38,6 +39,10 @@ namespace ApartmentLayouts
                         .FirstOrDefault(rb => rb.Name == "rbt_NoSeparationByLevels").IsChecked = true;
                 }
 
+            }
+            if(ApartmentLayoutsSettingsParam.ConsiderAreaCoefficient != null)
+            {
+                checkBox_Coefficient.IsChecked = ApartmentLayoutsSettingsParam.ConsiderAreaCoefficient;
             }
         }
         private void btn_Ok_Click(object sender, RoutedEventArgs e)
@@ -72,7 +77,9 @@ namespace ApartmentLayouts
                 .Children.OfType<RadioButton>()
                 .FirstOrDefault(rb => rb.IsChecked.Value == true)
                 .Name;
+            ConsiderAreaCoefficient = (bool)checkBox_Coefficient.IsChecked;
             ApartmentLayoutsSettingsParam.ApartmentLayoutsSettingsValue = ApartmentLayoutsSettingsSelectionValue;
+            ApartmentLayoutsSettingsParam.ConsiderAreaCoefficient = ConsiderAreaCoefficient;
             ApartmentLayoutsSettingsParam.SaveSettings();
         }
     }
