@@ -4,8 +4,6 @@ using Autodesk.Revit.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ApartmentLayouts
 {
@@ -326,28 +324,58 @@ namespace ApartmentLayouts
                     double roomTypeParamAsDouble = room.get_Parameter(roomTypeParamGuid).AsDouble();
                     if (roomTypeParamAsDouble == 1)
                     {
-                        apartmentAreaResidential += (Math.Round(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble() / 10.764, 2) * 10.764);
+#if R2019 || R2020 || R2021
+                        double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), DisplayUnitType.DUT_SQUARE_METERS), 2);
+                        apartmentAreaResidential += UnitUtils.ConvertToInternalUnits(area, DisplayUnitType.DUT_SQUARE_METERS);
+#else
+                        double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), UnitTypeId.SquareMeters), 2);
+                        apartmentAreaResidential += UnitUtils.ConvertToInternalUnits(area, UnitTypeId.SquareMeters);
+#endif
                         roomsCount += 1;
                     }
                     if (roomTypeParamAsDouble == 1 || roomTypeParamAsDouble == 2)
                     {
-                        apartmentArea += (Math.Round(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble() / 10.764, 2) * 10.764);
+#if R2019 || R2020 || R2021
+                        double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), DisplayUnitType.DUT_SQUARE_METERS), 2);
+                        apartmentArea += UnitUtils.ConvertToInternalUnits(area, DisplayUnitType.DUT_SQUARE_METERS);
+#else
+                        double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), UnitTypeId.SquareMeters), 2);
+                        apartmentArea += UnitUtils.ConvertToInternalUnits(area, UnitTypeId.SquareMeters);
+#endif
                     }
                     if (roomTypeParamAsDouble != 5)
                     {
                         if (roomTypeParamAsDouble == 1 || roomTypeParamAsDouble == 2)
                         {
-                            apartmentAreaTotal += (Math.Round(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble() / 10.764, 2) * 10.764);
+#if R2019 || R2020 || R2021
+                            double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), DisplayUnitType.DUT_SQUARE_METERS), 2);
+                            apartmentAreaTotal += UnitUtils.ConvertToInternalUnits(area, DisplayUnitType.DUT_SQUARE_METERS);
+#else
+                            double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), UnitTypeId.SquareMeters), 2);
+                            apartmentAreaTotal += UnitUtils.ConvertToInternalUnits(area, UnitTypeId.SquareMeters);
+#endif
                         }
                         else if (roomTypeParamAsDouble == 3)
                         {
                             if (considerAreaCoefficient)
                             {
-                                apartmentAreaTotal += (Math.Round((room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble() / 10.764) * 0.5, 2) * 10.764);
+#if R2019 || R2020 || R2021
+                                double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), DisplayUnitType.DUT_SQUARE_METERS), 2) * 0.5;
+                                apartmentAreaTotal += UnitUtils.ConvertToInternalUnits(area, DisplayUnitType.DUT_SQUARE_METERS);
+#else
+                                double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), UnitTypeId.SquareMeters), 2) * 0.5;
+                                apartmentAreaTotal += UnitUtils.ConvertToInternalUnits(area, UnitTypeId.SquareMeters);
+#endif
                             }
                             else
                             {
-                                apartmentAreaTotal += (Math.Round((room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble() / 10.764), 2) * 10.764);
+#if R2019 || R2020 || R2021
+                                double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), DisplayUnitType.DUT_SQUARE_METERS), 2);
+                                apartmentAreaTotal += UnitUtils.ConvertToInternalUnits(area, DisplayUnitType.DUT_SQUARE_METERS);
+#else
+                                double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), UnitTypeId.SquareMeters), 2);
+                                apartmentAreaTotal += UnitUtils.ConvertToInternalUnits(area, UnitTypeId.SquareMeters);
+#endif
                             }
                                 
                         }
@@ -355,15 +383,33 @@ namespace ApartmentLayouts
                         {
                             if (considerAreaCoefficient)
                             {
-                                apartmentAreaTotal += (Math.Round((room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble() / 10.764) * 0.3, 2) * 10.764);
+#if R2019 || R2020 || R2021
+                                double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), DisplayUnitType.DUT_SQUARE_METERS), 2)  * 0.3;
+                                apartmentAreaTotal += UnitUtils.ConvertToInternalUnits(area, DisplayUnitType.DUT_SQUARE_METERS);
+#else
+                                double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), UnitTypeId.SquareMeters), 2) * 0.3;
+                                apartmentAreaTotal += UnitUtils.ConvertToInternalUnits(area, UnitTypeId.SquareMeters);
+#endif
                             }
                             else
                             {
-                                apartmentAreaTotal += (Math.Round((room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble() / 10.764), 2) * 10.764);
+#if R2019 || R2020 || R2021
+                                double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), DisplayUnitType.DUT_SQUARE_METERS), 2);
+                                apartmentAreaTotal += UnitUtils.ConvertToInternalUnits(area, DisplayUnitType.DUT_SQUARE_METERS);
+#else
+                                double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), UnitTypeId.SquareMeters), 2);
+                                apartmentAreaTotal += UnitUtils.ConvertToInternalUnits(area, UnitTypeId.SquareMeters);
+#endif
                             }
                                 
                         }
-                        apartmentAreaTotalWithoutCoefficient += (Math.Round(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble() / 10.764, 2) * 10.764);
+#if R2019 || R2020 || R2021
+                        double areaTotal = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), DisplayUnitType.DUT_SQUARE_METERS), 2);
+                        apartmentAreaTotalWithoutCoefficient += UnitUtils.ConvertToInternalUnits(areaTotal, DisplayUnitType.DUT_SQUARE_METERS);
+#else
+                        double areaTotal = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), UnitTypeId.SquareMeters), 2);
+                        apartmentAreaTotalWithoutCoefficient += UnitUtils.ConvertToInternalUnits(areaTotal, UnitTypeId.SquareMeters);
+#endif
                     }
                 }
                 foreach (Room room in apartmentRoomList)
