@@ -45,7 +45,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\</OutputPath>
+    <OutputPath>bin\R2021\</OutputPath>
     <DefineConstants>DEBUG;R2021</DefineConstants>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <AssemblyName>$(AssemblyName)</AssemblyName>
@@ -179,7 +179,7 @@
         </Reference>
       </ItemGroup>
     </When>
-	<When Condition=" '$(Configuration)'=='R2024' ">
+    <When Condition=" '$(Configuration)'=='R2024' ">
       <ItemGroup>
         <Reference Include="RevitAPI">
           <HintPath>C:\Program Files\Autodesk\Revit 2024\RevitAPI.dll</HintPath>
