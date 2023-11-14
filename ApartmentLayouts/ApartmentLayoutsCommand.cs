@@ -357,27 +357,58 @@ namespace ApartmentLayouts
                     }
                     else if (roomTypeParamAsDouble == 3)
                     {
+                        if (considerAreaCoefficient)
+                        {
 #if R2019 || R2020 || R2021
-                        double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), DisplayUnitType.DUT_SQUARE_METERS) + 0.00000000005, 2, MidpointRounding.AwayFromZero);
-                        loggiasArea += area;
-                        loggiasAreaWithCoefficient += Math.Round(area * 0.5, 2, MidpointRounding.AwayFromZero);
+                            double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), DisplayUnitType.DUT_SQUARE_METERS) + 0.00000000005, 2, MidpointRounding.AwayFromZero);
+                            loggiasArea += area;
+                            loggiasAreaWithCoefficient += Math.Round(area * 0.5, 2, MidpointRounding.AwayFromZero);
 #else
-                        double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), UnitTypeId.SquareMeters) + 0.00000000005, 2, MidpointRounding.AwayFromZero);
-                        loggiasArea += area;
-                        loggiasAreaWithCoefficient += Math.Round(area * 0.5, 2, MidpointRounding.AwayFromZero);
+                            double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), UnitTypeId.SquareMeters) + 0.00000000005, 2, MidpointRounding.AwayFromZero);
+                            loggiasArea += area;
+                            loggiasAreaWithCoefficient += Math.Round(area * 0.5, 2, MidpointRounding.AwayFromZero);
 #endif
+                        }
+                        else
+                        {
+#if R2019 || R2020 || R2021
+                            double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), DisplayUnitType.DUT_SQUARE_METERS) + 0.00000000005, 2, MidpointRounding.AwayFromZero);
+                            loggiasArea += area;
+                            loggiasAreaWithCoefficient += Math.Round(area, 2, MidpointRounding.AwayFromZero);
+#else
+                            double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), UnitTypeId.SquareMeters) + 0.00000000005, 2, MidpointRounding.AwayFromZero);
+                            loggiasArea += area;
+                            loggiasAreaWithCoefficient += Math.Round(area, 2, MidpointRounding.AwayFromZero);
+#endif
+                        }
+
                     }
                     else if (roomTypeParamAsDouble == 4)
                     {
+                        if (considerAreaCoefficient)
+                        {
 #if R2019 || R2020 || R2021
-                        double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), DisplayUnitType.DUT_SQUARE_METERS) + 0.00000000005, 2, MidpointRounding.AwayFromZero);
-                        balconiesArea += area;
-                        balconiesAreaWithCoefficient += Math.Round(area * 0.3, 2, MidpointRounding.AwayFromZero);
+                            double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), DisplayUnitType.DUT_SQUARE_METERS) + 0.00000000005, 2, MidpointRounding.AwayFromZero);
+                            balconiesArea += area;
+                            balconiesAreaWithCoefficient += Math.Round(area * 0.3, 2, MidpointRounding.AwayFromZero);
 #else
-                        double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), UnitTypeId.SquareMeters) + 0.00000000005, 2, MidpointRounding.AwayFromZero);
-                        balconiesArea += area;
-                        balconiesAreaWithCoefficient += Math.Round(area * 0.3, 2, MidpointRounding.AwayFromZero);
+                            double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), UnitTypeId.SquareMeters) + 0.00000000005, 2, MidpointRounding.AwayFromZero);
+                            balconiesArea += area;
+                            balconiesAreaWithCoefficient += Math.Round(area * 0.3, 2, MidpointRounding.AwayFromZero);
 #endif
+                        }
+                        else
+                        {
+#if R2019 || R2020 || R2021
+                            double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), DisplayUnitType.DUT_SQUARE_METERS) + 0.00000000005, 2, MidpointRounding.AwayFromZero);
+                            balconiesArea += area;
+                            balconiesAreaWithCoefficient += Math.Round(area, 2, MidpointRounding.AwayFromZero);
+#else
+                            double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), UnitTypeId.SquareMeters) + 0.00000000005, 2, MidpointRounding.AwayFromZero);
+                            balconiesArea += area;
+                            balconiesAreaWithCoefficient += Math.Round(area, 2, MidpointRounding.AwayFromZero);
+#endif
+                        }
                     }
                 }
 
