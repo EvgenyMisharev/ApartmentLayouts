@@ -3,7 +3,9 @@ using Autodesk.Revit.DB.Architecture;
 using Autodesk.Revit.UI;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace ApartmentLayouts
 {
@@ -14,6 +16,12 @@ namespace ApartmentLayouts
         static bool considerAreaCoefficient;
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
+            try
+            {
+                GetPluginStartInfo();
+            }
+            catch { }
+
             Document doc = commandData.Application.ActiveUIDocument.Document;
             ErrorRoomsList = new List<ElementId>();
 
@@ -30,11 +38,11 @@ namespace ApartmentLayouts
             List<string> sectionNumberList = GetSectionNumberList(roomList);
 
             //Проверка наличия общих параметров
-            if(roomList.Count != 0)
+            if (roomList.Count != 0)
             {
                 //О_НомерСекции - номер секции к которой относится помещение
                 Guid sectionNumberParamGuid = new Guid("b59a3474-a5f4-430a-b087-a20f1a4eb57e");
-                if(roomList.First().get_Parameter(sectionNumberParamGuid) == null)
+                if (roomList.First().get_Parameter(sectionNumberParamGuid) == null)
                 {
                     TaskDialog.Show("Revit", "У помещений отсутствует параметр \"О_НомерСекции\"!");
                     return Result.Cancelled;
@@ -220,7 +228,7 @@ namespace ApartmentLayouts
             List<string> tempSectionNumberList = new List<string>();
             foreach (Room room in roomList)
             {
-                if(room.get_Parameter(sectionNumberParamGuid) != null)
+                if (room.get_Parameter(sectionNumberParamGuid) != null)
                 {
                     string sectionNumber = room.get_Parameter(sectionNumberParamGuid).AsString();
                     if (!tempSectionNumberList.Contains(sectionNumber) && sectionNumber != null)
@@ -247,7 +255,6 @@ namespace ApartmentLayouts
             tempApartmentNumberList = tempApartmentNumberList.OrderBy(n => n).ToList();
             return tempApartmentNumberList;
         }
-
         private static void SetRoomTypeParam(List<Room> roomList)
         {
             Guid roomTypeParamGuid = new Guid("7743e986-fcd9-4029-b960-71e522adccab");
@@ -345,7 +352,7 @@ namespace ApartmentLayouts
 #endif
                         roomsCount += 1;
                     }
-                    else if (roomTypeParamAsDouble == 2) 
+                    else if (roomTypeParamAsDouble == 2)
                     {
 #if R2019 || R2020 || R2021
                         double area = Math.Round(UnitUtils.ConvertFromInternalUnits(room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble(), DisplayUnitType.DUT_SQUARE_METERS) + 0.00000000005, 2, MidpointRounding.AwayFromZero);
@@ -439,6 +446,27 @@ namespace ApartmentLayouts
                     room.get_Parameter(apartmentAreaTotalWithoutCoefficientParamGuid).Set(apartmentAreaTotalWithoutCoefficient);
                     room.get_Parameter(roomsCountParamGuid).Set(roomsCount);
                 }
+            }
+        }
+        private static void GetPluginStartInfo()
+        {
+            // Получаем сборку, в которой выполняется текущий код
+            Assembly thisAssembly = Assembly.GetExecutingAssembly();
+            string assemblyName = "ApartmentLayouts";
+            string assemblyNameRus = "Квартирография";
+            string assemblyFolderPath = Path.GetDirectoryName(thisAssembly.Location);
+
+            int lastBackslashIndex = assemblyFolderPath.LastIndexOf("\\");
+            string dllPath = assemblyFolderPath.Substring(0, lastBackslashIndex + 1) + "PluginInfoCollector\\PluginInfoCollector.dll";
+
+            Assembly assembly = Assembly.LoadFrom(dllPath);
+            Type type = assembly.GetType("PluginInfoCollector.InfoCollector");
+            var constructor = type.GetConstructor(new Type[] { typeof(string), typeof(string) });
+
+            if (type != null)
+            {
+                // Создание экземпляра класса
+                object instance = Activator.CreateInstance(type, new object[] { assemblyName, assemblyNameRus });
             }
         }
     }
